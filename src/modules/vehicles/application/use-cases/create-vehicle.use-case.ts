@@ -7,6 +7,7 @@ import type { ICacheProvider } from '../../../../shared/infrastructure/cache/cac
 import { ModelNotFoundError } from '../../../models/domain/errors/model-not-found.error';
 import { VehicleAlreadyExistsError } from '../../domain/errors/vehicle-already-exists.error';
 import { CreateVehicleDto } from '../dto/create-vehicle.dto';
+import { RabbitmqService } from '../../../../shared/infrastructure/messaging/rabbitmq.service';
 
 @Injectable()
 export class CreateVehicleUseCase {
@@ -19,6 +20,7 @@ export class CreateVehicleUseCase {
     private readonly modelRepository: IModelRepository,
     @Inject('ICacheProvider')
     private readonly cacheProvider: ICacheProvider,
+    private readonly rabbitmqService: RabbitmqService,
   ) {}
 
   async execute(
@@ -68,6 +70,10 @@ export class CreateVehicleUseCase {
       userId: input.userId,
       timestamp: now.toISOString(),
     });
+
+    // Publica o evento de criação de forma assíncrona
+    void this.rabbitmqService.publishVehicleCreated(vehicle.id, vehicle.licensePlate, vehicle.createdBy);
+
     return vehicle;
   }
 }

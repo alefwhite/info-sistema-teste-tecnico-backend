@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { IVehicleRepository } from '../../domain/repositories/vehicle.repository.interface';
 import type { ICacheProvider } from '../../../../shared/infrastructure/cache/cache-provider.interface';
 import { VehicleNotFoundError } from '../../domain/errors/vehicle-not-found.error';
+import { RabbitmqService } from '../../../../shared/infrastructure/messaging/rabbitmq.service';
 
 @Injectable()
 export class DeleteVehicleUseCase {
@@ -12,6 +13,7 @@ export class DeleteVehicleUseCase {
     private readonly repository: IVehicleRepository,
     @Inject('ICacheProvider')
     private readonly cacheProvider: ICacheProvider,
+    private readonly rabbitmqService: RabbitmqService,
   ) {}
 
   async execute(input: { id: string; userId: string }): Promise<void> {
@@ -32,5 +34,8 @@ export class DeleteVehicleUseCase {
       userId: input.userId,
       timestamp: new Date().toISOString(),
     });
+
+    // Publica o evento de remoção de forma assíncrona
+    void this.rabbitmqService.publishVehicleDeleted(vehicle.id, vehicle.licensePlate, input.userId);
   }
 }

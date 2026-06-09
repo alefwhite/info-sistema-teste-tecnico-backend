@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
@@ -9,12 +9,19 @@ import { UsersModule } from './modules/users/users.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
 import { SharedInfrastructureModule } from './shared/infrastructure/shared-infrastructure.module';
 import { InitialSchema1717888888888 } from './shared/infrastructure/database/migrations/1717888888888-InitialSchema';
+import { MongoModule } from './shared/infrastructure/mongodb/mongo.module';
+import { AuditMiddleware } from './shared/middleware/audit.middleware';
+import configuration from './config/configuration';
 
-const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
+const config = configuration();
+const databaseProvider = config.databaseProvider;
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -22,23 +29,28 @@ const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
       },
     ]),
     SharedInfrastructureModule,
+    MongoModule,
     ...(databaseProvider === 'typeorm'
       ? [
-          TypeOrmModule.forRoot({
-            type: 'mssql',
-            host: process.env.DB_HOST ?? 'localhost',
-            port: Number(process.env.DB_PORT ?? 1433),
-            username: process.env.DB_USER ?? 'sa',
-            password: process.env.DB_PASSWORD ?? 'YourStrong@Pass123',
-            database: process.env.DB_NAME ?? 'fleet_db',
-            autoLoadEntities: true,
-            synchronize: false,
-            migrations: [InitialSchema1717888888888],
-            migrationsRun: true,
-            options: {
-              encrypt: true,
-              trustServerCertificate: true,
-            },
+          TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
+              type: 'mssql',
+              host: configService.get<string>('db.host'),
+              port: configService.get<number>('db.port'),
+              username: configService.get<string>('db.username'),
+              password: configService.get<string>('db.password'),
+              database: configService.get<string>('db.database'),
+              autoLoadEntities: true,
+              synchronize: false,
+              migrations: [InitialSchema1717888888888],
+              migrationsRun: true,
+              options: {
+                encrypt: true,
+                trustServerCertificate: true,
+              },
+            }),
           }),
         ]
       : []),
@@ -51,4 +63,8 @@ const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuditMiddleware).forRoutes('*');
+  }
+}

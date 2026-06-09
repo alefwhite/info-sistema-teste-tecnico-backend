@@ -7,6 +7,7 @@ import { ModelNotFoundError } from '../../../models/domain/errors/model-not-foun
 import { VehicleNotFoundError } from '../../domain/errors/vehicle-not-found.error';
 import { VehicleAlreadyExistsError } from '../../domain/errors/vehicle-already-exists.error';
 import { UpdateVehicleDto } from '../dto/update-vehicle.dto';
+import { RabbitmqService } from '../../../../shared/infrastructure/messaging/rabbitmq.service';
 
 @Injectable()
 export class UpdateVehicleUseCase {
@@ -19,6 +20,7 @@ export class UpdateVehicleUseCase {
     private readonly modelRepository: IModelRepository,
     @Inject('ICacheProvider')
     private readonly cacheProvider: ICacheProvider,
+    private readonly rabbitmqService: RabbitmqService,
   ) {}
 
   async execute(
@@ -83,6 +85,10 @@ export class UpdateVehicleUseCase {
       userId: input.userId,
       timestamp: vehicle.updatedAt.toISOString(),
     });
+
+    // Publica o evento de atualização de forma assíncrona
+    void this.rabbitmqService.publishVehicleUpdated(vehicle.id, vehicle.licensePlate, input.userId);
+
     return vehicle;
   }
 }
