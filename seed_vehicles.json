@@ -1,0 +1,26 @@
+[
+  {
+    "licensePlate": "AIV1A01",
+    "chassis": "9BWAAAAAA0A000001",
+    "renavam": "11111111111",
+    "year": 2022,
+    "modelName": "Corolla",
+    "brandName": "Toyota"
+  },
+  {
+    "licensePlate": "AIV2B02",
+    "chassis": "9BWAAAAAA0A000002",
+    "renavam": "22222222222",
+    "year": 2023,
+    "modelName": "Civic",
+    "brandName": "Honda"
+  },
+  {
+    "licensePlate": "AIV3C03",
+    "chassis": "9BWAAAAAA0A000003",
+    "renavam": "33333333333",
+    "year": 2024,
+    "modelName": "Model S",
+    "brandName": "Tesla"
+  }
+]

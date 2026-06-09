@@ -1,0 +1,135 @@
+@baseUrl = http://localhost:3000
+@adminUser = aivacol
+@adminPass = aivacol_admin_password
+
+### 1. Autenticação (Login)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "login": "{{adminUser}}",
+  "password": "{{adminPass}}"
+}
+
+### Guardar Token JWT obtido
+@authToken = {{login.response.body.data.accessToken}}
+
+### ==========================================
+### GESTÃO DE MARCAS (BRANDS)
+### ==========================================
+
+### 2. Criar Marca
+# @name createBrand
+POST {{baseUrl}}/brands
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Toyota"
+}
+
+### Guardar ID da Marca criada
+@brandId = {{createBrand.response.body.data.id}}
+
+### 3. Listar Marcas
+GET {{baseUrl}}/brands
+Authorization: Bearer {{authToken}}
+
+### 4. Buscar Marca por ID
+GET {{baseUrl}}/brands/{{brandId}}
+Authorization: Bearer {{authToken}}
+
+### 5. Atualizar Marca
+PATCH {{baseUrl}}/brands/{{brandId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Toyota Premium"
+}
+
+### ==========================================
+### GESTÃO DE MODELOS (MODELS)
+### ==========================================
+
+### 6. Criar Modelo
+# @name createModel
+POST {{baseUrl}}/models
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Corolla XEi",
+  "brandId": "{{brandId}}"
+}
+
+### Guardar ID do Modelo criado
+@modelId = {{createModel.response.body.data.id}}
+
+### 7. Listar Modelos
+GET {{baseUrl}}/models
+Authorization: Bearer {{authToken}}
+
+### 8. Buscar Modelo por ID
+GET {{baseUrl}}/models/{{modelId}}
+Authorization: Bearer {{authToken}}
+
+### 9. Atualizar Modelo
+PATCH {{baseUrl}}/models/{{modelId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Corolla Altis"
+}
+
+### ==========================================
+### GESTÃO DE VEÍCULOS (VEHICLES)
+### ==========================================
+
+### 10. Criar Veículo
+# @name createVehicle
+POST {{baseUrl}}/vehicles
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "licensePlate": "AIV-1010",
+  "chassis": "9BWAAAAAA0A101010",
+  "renavam": "12345678901",
+  "year": 2023,
+  "modelId": "{{modelId}}"
+}
+
+### Guardar ID do Veículo criado
+@vehicleId = {{createVehicle.response.body.data.id}}
+
+### 11. Listar Veículos (Usará Cache do Redis se ativado)
+GET {{baseUrl}}/vehicles
+Authorization: Bearer {{authToken}}
+
+### 12. Buscar Veículo por ID (Usará Cache do Redis se ativado)
+GET {{baseUrl}}/vehicles/{{vehicleId}}
+Authorization: Bearer {{authToken}}
+
+### 13. Atualizar Veículo (Invalida Cache)
+PATCH {{baseUrl}}/vehicles/{{vehicleId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "licensePlate": "AIV-2020"
+}
+
+### 14. Excluir Veículo (Invalida Cache)
+DELETE {{baseUrl}}/vehicles/{{vehicleId}}
+Authorization: Bearer {{authToken}}
+
+### 15. Excluir Modelo (Rejeitado se associado)
+DELETE {{baseUrl}}/models/{{modelId}}
+Authorization: Bearer {{authToken}}
+
+### 16. Excluir Marca (Rejeitado se associada)
+DELETE {{baseUrl}}/brands/{{brandId}}
+Authorization: Bearer {{authToken}}
