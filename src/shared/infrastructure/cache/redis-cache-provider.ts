@@ -4,6 +4,7 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { ICacheProvider } from './cache-provider.interface';
 
@@ -15,9 +16,11 @@ export class RedisCacheProvider
   private client!: Redis;
   private isConnected = false;
 
+  constructor(private readonly configService: ConfigService) {}
+
   async onModuleInit() {
-    const host = process.env.REDIS_HOST ?? 'localhost';
-    const port = Number(process.env.REDIS_PORT ?? 6379);
+    const host = this.configService.get<string>('redis.host') ?? 'localhost';
+    const port = this.configService.get<number>('redis.port') ?? 6379;
 
     this.client = new Redis({
       host,

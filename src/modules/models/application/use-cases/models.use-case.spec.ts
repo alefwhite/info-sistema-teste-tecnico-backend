@@ -23,8 +23,15 @@ describe('Models Use Cases', () => {
   let listModelsUseCase: ListModelsUseCase;
   let brand: Brand;
 
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'defaultUserPassword') return 'aivacol';
+      return null;
+    }),
+  } as any;
+
   beforeEach(async () => {
-    store = new FleetStoreService();
+    store = new FleetStoreService(mockConfigService);
     repository = new InMemoryModelRepository(store);
     brandRepository = new InMemoryBrandRepository(store);
     createModelUseCase = new CreateModelUseCase(repository, brandRepository);

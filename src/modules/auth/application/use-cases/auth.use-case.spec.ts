@@ -13,8 +13,15 @@ describe('Auth Use Cases', () => {
   let loginUseCase: LoginUseCase;
   let user: User;
 
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'defaultUserPassword') return 'aivacol';
+      return null;
+    }),
+  } as any;
+
   beforeEach(async () => {
-    store = new FleetStoreService();
+    store = new FleetStoreService(mockConfigService);
     userRepository = new InMemoryUserRepository(store);
     jwtService = new JwtService({ secret: 'test-secret' });
     loginUseCase = new LoginUseCase(userRepository, jwtService);

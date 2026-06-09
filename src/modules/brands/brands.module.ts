@@ -10,8 +10,10 @@ import { ListBrandsUseCase } from './application/use-cases/list-brands.use-case'
 import { InMemoryBrandRepository } from './infrastructure/repositories/in-memory-brand.repository';
 import { TypeOrmBrandRepository } from './infrastructure/repositories/typeorm-brand.repository';
 import { BrandOrmEntity } from './infrastructure/database/brand.orm-entity';
+import configuration from '../../config/configuration';
 
-const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
+const config = configuration();
+const databaseProvider = config.databaseProvider;
 
 const repositoryProvider = {
   provide: 'IBrandRepository',

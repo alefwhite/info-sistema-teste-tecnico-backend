@@ -1,6 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import * as bcrypt from 'bcryptjs';
+
 export interface UserRecord {
   id: string;
   nickname: string;
@@ -43,11 +45,14 @@ export class FleetStoreService implements OnModuleInit {
   readonly brands: BrandRecord[] = [];
   readonly models: ModelRecord[] = [];
   readonly vehicles: VehicleRecord[] = [];
+
+  constructor(private readonly configService: ConfigService) {}
+
   async onModuleInit(): Promise<void> {
     if (this.users.some((user) => normalize(user.nickname) === 'aivacol')) {
       return;
     }
-    const password = process.env.DEFAULT_USER_PASSWORD ?? 'aivacol';
+    const password = this.configService.get<string>('defaultUserPassword') ?? 'aivacol';
     const hashedPassword = await bcrypt.hash(password, 10);
     this.users.push({
       id: randomUUID(),

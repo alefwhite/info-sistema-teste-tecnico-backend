@@ -4,16 +4,18 @@ import { UserOrmEntity } from '../../../modules/users/infrastructure/database/us
 import { BrandOrmEntity } from '../../../modules/brands/infrastructure/database/brand.orm-entity';
 import { ModelOrmEntity } from '../../../modules/models/infrastructure/database/model.orm-entity';
 import { VehicleOrmEntity } from '../../../modules/vehicles/infrastructure/database/vehicle.orm-entity';
+import configuration from '../../../config/configuration';
 
 dotenv.config();
+const config = configuration();
 
 export const AppDataSource = new DataSource({
   type: 'mssql',
-  host: process.env.DB_HOST ?? 'localhost',
-  port: Number(process.env.DB_PORT ?? 1433),
-  username: process.env.DB_USER ?? 'sa',
-  password: process.env.DB_PASSWORD ?? 'YourStrong@Pass123',
-  database: process.env.DB_NAME ?? 'fleet_db',
+  host: config.db.host,
+  port: config.db.port,
+  username: config.db.username,
+  password: config.db.password,
+  database: config.db.database,
   entities: [UserOrmEntity, BrandOrmEntity, ModelOrmEntity, VehicleOrmEntity],
   migrations: ['src/shared/infrastructure/database/migrations/*.ts'],
   synchronize: false,

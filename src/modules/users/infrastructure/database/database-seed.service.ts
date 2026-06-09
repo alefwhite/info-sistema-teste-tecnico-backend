@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
 import { User } from '../../domain/entities/user.entity';
@@ -11,6 +12,7 @@ export class DatabaseSeedService implements OnModuleInit {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   async onModuleInit() {
@@ -18,7 +20,7 @@ export class DatabaseSeedService implements OnModuleInit {
     if (existing) {
       return;
     }
-    const password = process.env.DEFAULT_USER_PASSWORD ?? 'aivacol';
+    const password = this.configService.get<string>('defaultUserPassword') ?? 'aivacol';
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User(
       randomUUID(),

@@ -11,8 +11,10 @@ import { ListModelsUseCase } from './application/use-cases/list-models.use-case'
 import { InMemoryModelRepository } from './infrastructure/repositories/in-memory-model.repository';
 import { TypeOrmModelRepository } from './infrastructure/repositories/typeorm-model.repository';
 import { ModelOrmEntity } from './infrastructure/database/model.orm-entity';
+import configuration from '../../config/configuration';
 
-const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
+const config = configuration();
+const databaseProvider = config.databaseProvider;
 
 const repositoryProvider = {
   provide: 'IModelRepository',

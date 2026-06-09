@@ -5,8 +5,10 @@ import { InMemoryUserRepository } from './infrastructure/repositories/in-memory-
 import { TypeOrmUserRepository } from './infrastructure/repositories/typeorm-user.repository';
 import { UserOrmEntity } from './infrastructure/database/user.orm-entity';
 import { DatabaseSeedService } from './infrastructure/database/database-seed.service';
+import configuration from '../../config/configuration';
 
-const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
+const config = configuration();
+const databaseProvider = config.databaseProvider;
 
 const repositoryProvider = {
   provide: 'IUserRepository',

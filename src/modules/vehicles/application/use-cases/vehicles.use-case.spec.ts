@@ -24,8 +24,22 @@ describe('Vehicles Use Cases', () => {
   let listVehiclesUseCase: ListVehiclesUseCase;
   let model: Model;
 
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'cacheTtl') return 3600;
+      if (key === 'defaultUserPassword') return 'aivacol';
+      return null;
+    }),
+  } as any;
+
+  const mockRabbitmqService = {
+    publishVehicleCreated: jest.fn(),
+    publishVehicleUpdated: jest.fn(),
+    publishVehicleDeleted: jest.fn(),
+  } as any;
+
   beforeEach(async () => {
-    store = new FleetStoreService();
+    store = new FleetStoreService(mockConfigService);
     repository = new InMemoryVehicleRepository(store);
     modelRepository = new InMemoryModelRepository(store);
     cacheProvider = new InMemoryCacheProvider();
@@ -34,15 +48,21 @@ describe('Vehicles Use Cases', () => {
       repository,
       modelRepository,
       cacheProvider,
+      mockRabbitmqService,
     );
     updateVehicleUseCase = new UpdateVehicleUseCase(
       repository,
       modelRepository,
       cacheProvider,
+      mockRabbitmqService,
     );
-    deleteVehicleUseCase = new DeleteVehicleUseCase(repository, cacheProvider);
-    findVehicleUseCase = new FindVehicleUseCase(repository, cacheProvider);
-    listVehiclesUseCase = new ListVehiclesUseCase(repository, cacheProvider);
+    deleteVehicleUseCase = new DeleteVehicleUseCase(
+      repository,
+      cacheProvider,
+      mockRabbitmqService,
+    );
+    findVehicleUseCase = new FindVehicleUseCase(repository, cacheProvider, mockConfigService);
+    listVehiclesUseCase = new ListVehiclesUseCase(repository, cacheProvider, mockConfigService);
 
     model = await modelRepository.create(
       new Model(
@@ -69,6 +89,7 @@ describe('Vehicles Use Cases', () => {
       expect(result.id).toBeDefined();
       expect(result.licensePlate).toBe('ABC-1234');
       expect(store.vehicles.length).toBe(1);
+      expect(mockRabbitmqService.publishVehicleCreated).toHaveBeenCalled();
     });
 
     it('should throw ModelNotFoundError if model does not exist', async () => {
@@ -122,6 +143,7 @@ describe('Vehicles Use Cases', () => {
         userId: 'user-1',
       });
       expect(updated.licensePlate).toBe('XYZ-9999');
+      expect(mockRabbitmqService.publishVehicleUpdated).toHaveBeenCalled();
     });
 
     it('should throw VehicleNotFoundError', async () => {
@@ -201,6 +223,7 @@ describe('Vehicles Use Cases', () => {
       });
       await deleteVehicleUseCase.execute({ id: vehicle.id, userId: 'user-1' });
       expect(store.vehicles.length).toBe(0);
+      expect(mockRabbitmqService.publishVehicleDeleted).toHaveBeenCalled();
     });
   });
 });

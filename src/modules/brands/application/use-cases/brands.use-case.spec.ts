@@ -18,8 +18,15 @@ describe('Brands Use Cases', () => {
   let findBrandUseCase: FindBrandUseCase;
   let listBrandsUseCase: ListBrandsUseCase;
 
+  const mockConfigService = {
+    get: jest.fn((key: string) => {
+      if (key === 'defaultUserPassword') return 'aivacol';
+      return null;
+    }),
+  } as any;
+
   beforeEach(() => {
-    store = new FleetStoreService();
+    store = new FleetStoreService(mockConfigService);
     repository = new InMemoryBrandRepository(store);
     createBrandUseCase = new CreateBrandUseCase(repository);
     updateBrandUseCase = new UpdateBrandUseCase(repository);

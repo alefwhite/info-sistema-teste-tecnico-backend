@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { IVehicleRepository } from '../../domain/repositories/vehicle.repository.interface';
 import type { ICacheProvider } from '../../../../shared/infrastructure/cache/cache-provider.interface';
 import { VehicleNotFoundError } from '../../domain/errors/vehicle-not-found.error';
@@ -13,6 +14,7 @@ export class FindVehicleUseCase {
     private readonly repository: IVehicleRepository,
     @Inject('ICacheProvider')
     private readonly cacheProvider: ICacheProvider,
+    private readonly configService: ConfigService,
   ) {}
 
   async execute(id: string): Promise<Vehicle> {
@@ -32,7 +34,7 @@ export class FindVehicleUseCase {
     }
 
     try {
-      const ttl = Number(process.env.CACHE_TTL ?? 3600);
+      const ttl = this.configService.get<number>('cacheTtl') ?? 3600;
       await this.cacheProvider.set(cacheKey, vehicle, ttl);
     } catch (err) {
       this.logger.error('Failed to save to cache', err);

@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { FleetStoreService } from './fleet-store.service';
 import { InMemoryCacheProvider } from './in-memory-cache.provider';
 import { RedisCacheProvider } from './cache/redis-cache-provider';
+import configuration from '../../config/configuration';
 
-const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
+const config = configuration();
+const databaseProvider = config.databaseProvider;
 
 const cacheProvider = {
   provide: 'ICacheProvider',
