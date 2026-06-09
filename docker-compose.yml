@@ -9,6 +9,21 @@ services:
       - "1433:1433"
     volumes:
       - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong@Pass123", "-C", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  mssql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: fleet_mssql_init
+    depends_on:
+      mssql:
+        condition: service_healthy
+    entrypoint: >
+      /opt/mssql-tools18/bin/sqlcmd -S mssql -U sa -P 'YourStrong@Pass123' -C -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'fleet_db') CREATE DATABASE fleet_db"
 
   redis:
     image: redis:7-alpine
@@ -29,12 +44,43 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
 
   mongodb:
-    image: mongo:6-jammy
+    image: mongo:latest
     container_name: fleet_mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fleet_api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_PROVIDER=typeorm
+      - DB_HOST=mssql
+      - DB_PORT=1433
+      - DB_USER=sa
+      - DB_PASSWORD=YourStrong@Pass123
+      - DB_NAME=fleet_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_TTL=3600
+      - JWT_SECRET=your-secret-key-must-be-very-long-and-secure
+      - JWT_EXPIRES_IN=7d
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DEFAULT_USER_PASSWORD=aivacol_admin_password
+    depends_on:
+      mssql-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
 
 volumes:
   mssql_data:
