@@ -18,7 +18,9 @@ export class UpdateModelUseCase {
     private readonly brandRepository: IBrandRepository,
   ) {}
 
-  async execute(input: { id: string; userId: string } & UpdateModelDto): Promise<Model> {
+  async execute(
+    input: { id: string; userId: string } & UpdateModelDto,
+  ): Promise<Model> {
     const model = await this.repository.findById(input.id);
     if (!model) {
       throw new ModelNotFoundError(input.id);
@@ -34,7 +36,10 @@ export class UpdateModelUseCase {
     }
     if (input.name !== undefined) {
       const nameTrimmed = input.name.trim();
-      const conflict = await this.repository.findByNameAndBrandId(nameTrimmed, model.brandId);
+      const conflict = await this.repository.findByNameAndBrandId(
+        nameTrimmed,
+        model.brandId,
+      );
       if (conflict && conflict.id !== input.id) {
         throw new ModelAlreadyExistsError(nameTrimmed, model.brandId);
       }

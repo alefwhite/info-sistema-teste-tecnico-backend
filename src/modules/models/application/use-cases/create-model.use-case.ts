@@ -24,7 +24,10 @@ export class CreateModelUseCase {
       throw new BrandNotFoundError(input.brandId);
     }
     const nameTrimmed = input.name.trim();
-    const existing = await this.repository.findByNameAndBrandId(nameTrimmed, input.brandId);
+    const existing = await this.repository.findByNameAndBrandId(
+      nameTrimmed,
+      input.brandId,
+    );
     if (existing) {
       throw new ModelAlreadyExistsError(nameTrimmed, input.brandId);
     }

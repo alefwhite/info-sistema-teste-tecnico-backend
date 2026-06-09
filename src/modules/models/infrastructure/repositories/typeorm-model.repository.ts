@@ -43,7 +43,10 @@ export class TypeOrmModelRepository implements IModelRepository {
     return orm ? this.toDomain(orm) : null;
   }
 
-  async findByNameAndBrandId(name: string, brandId: string): Promise<Model | null> {
+  async findByNameAndBrandId(
+    name: string,
+    brandId: string,
+  ): Promise<Model | null> {
     const orm = await this.repository.findOneBy({ name, brandId });
     return orm ? this.toDomain(orm) : null;
   }

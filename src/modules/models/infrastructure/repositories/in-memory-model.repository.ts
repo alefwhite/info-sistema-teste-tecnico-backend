@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IModelRepository } from '../../domain/repositories/model.repository.interface';
 import { Model } from '../../domain/entities/model.entity';
-import { FleetStoreService, ModelRecord } from '../../../../shared/infrastructure/fleet-store.service';
+import {
+  FleetStoreService,
+  ModelRecord,
+} from '../../../../shared/infrastructure/fleet-store.service';
 import { ModelHasVehiclesError } from '../../domain/errors/model-has-vehicles.error';
 
 @Injectable()
@@ -40,7 +43,10 @@ export class InMemoryModelRepository implements IModelRepository {
     return record ? this.toDomain(record) : null;
   }
 
-  async findByNameAndBrandId(name: string, brandId: string): Promise<Model | null> {
+  async findByNameAndBrandId(
+    name: string,
+    brandId: string,
+  ): Promise<Model | null> {
     const record = this.store.findModelByNameAndBrandId(name, brandId);
     return record ? this.toDomain(record) : null;
   }
@@ -50,7 +56,9 @@ export class InMemoryModelRepository implements IModelRepository {
   }
 
   async findByBrandId(brandId: string): Promise<Model[]> {
-    return this.store.findModelsByBrandId(brandId).map((record) => this.toDomain(record));
+    return this.store
+      .findModelsByBrandId(brandId)
+      .map((record) => this.toDomain(record));
   }
 
   async update(id: string, data: Partial<Model>): Promise<Model> {

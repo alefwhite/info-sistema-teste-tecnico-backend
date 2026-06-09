@@ -36,7 +36,12 @@ export class ModelController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateModelDto, @Req() req: AuthenticatedRequest) {
-    return { data: await this.createModelUseCase.execute({ ...dto, userId: req.user.sub }) };
+    return {
+      data: await this.createModelUseCase.execute({
+        ...dto,
+        userId: req.user.sub,
+      }),
+    };
   }
 
   @Get()
@@ -56,13 +61,20 @@ export class ModelController {
     @Req() req: AuthenticatedRequest,
   ) {
     return {
-      data: await this.updateModelUseCase.execute({ id, ...dto, userId: req.user.sub }),
+      data: await this.updateModelUseCase.execute({
+        id,
+        ...dto,
+        userId: req.user.sub,
+      }),
     };
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
     await this.deleteModelUseCase.execute({ id, userId: req.user.sub });
   }
 }
