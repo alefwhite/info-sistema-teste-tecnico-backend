@@ -62,7 +62,8 @@ export class FleetStoreService implements OnModuleInit {
   findUserByLogin(login: string): UserRecord | undefined {
     const value = normalize(login);
     return this.users.find(
-      (user) => normalize(user.nickname) === value || normalize(user.email) === value,
+      (user) =>
+        normalize(user.nickname) === value || normalize(user.email) === value,
     );
   }
   findUserById(id: string): UserRecord | undefined {
@@ -81,7 +82,10 @@ export class FleetStoreService implements OnModuleInit {
   findModelById(id: string): ModelRecord | undefined {
     return this.models.find((model) => model.id === id);
   }
-  findModelByNameAndBrandId(name: string, brandId: string): ModelRecord | undefined {
+  findModelByNameAndBrandId(
+    name: string,
+    brandId: string,
+  ): ModelRecord | undefined {
     const value = normalize(name);
     return this.models.find(
       (model) => model.brandId === brandId && normalize(model.name) === value,
@@ -95,14 +99,20 @@ export class FleetStoreService implements OnModuleInit {
   }
   findVehicleByLicensePlate(licensePlate: string): VehicleRecord | undefined {
     const value = normalize(licensePlate);
-    return this.vehicles.find((vehicle) => normalize(vehicle.licensePlate) === value);
+    return this.vehicles.find(
+      (vehicle) => normalize(vehicle.licensePlate) === value,
+    );
   }
   findVehicleByChassis(chassis: string): VehicleRecord | undefined {
     const value = normalize(chassis);
-    return this.vehicles.find((vehicle) => normalize(vehicle.chassis) === value);
+    return this.vehicles.find(
+      (vehicle) => normalize(vehicle.chassis) === value,
+    );
   }
   findVehicleByRenavam(renavam: string): VehicleRecord | undefined {
     const value = normalize(renavam);
-    return this.vehicles.find((vehicle) => normalize(vehicle.renavam) === value);
+    return this.vehicles.find(
+      (vehicle) => normalize(vehicle.renavam) === value,
+    );
   }
 }
