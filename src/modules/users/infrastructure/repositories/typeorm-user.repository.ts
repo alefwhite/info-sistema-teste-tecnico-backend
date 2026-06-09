@@ -40,10 +40,7 @@ export class TypeOrmUserRepository implements IUserRepository {
 
   async findByLogin(login: string): Promise<User | null> {
     const orm = await this.repository.findOne({
-      where: [
-        { nickname: login },
-        { email: login },
-      ],
+      where: [{ nickname: login }, { email: login }],
     });
     return orm ? this.toDomain(orm) : null;
   }
