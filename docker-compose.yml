@@ -73,7 +73,9 @@ services:
       - JWT_SECRET=your-secret-key-must-be-very-long-and-secure
       - JWT_EXPIRES_IN=7d
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - MONGO_URI=mongodb://mongodb:27017/fleet_audit
       - DEFAULT_USER_PASSWORD=aivacol_admin_password
+
     depends_on:
       mssql-init:
         condition: service_completed_successfully
