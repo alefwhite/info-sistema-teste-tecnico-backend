@@ -21,7 +21,9 @@ export class UpdateVehicleUseCase {
     private readonly cacheProvider: ICacheProvider,
   ) {}
 
-  async execute(input: { id: string; userId: string } & UpdateVehicleDto): Promise<Vehicle> {
+  async execute(
+    input: { id: string; userId: string } & UpdateVehicleDto,
+  ): Promise<Vehicle> {
     const vehicle = await this.repository.findById(input.id);
     if (!vehicle) {
       throw new VehicleNotFoundError(input.id);

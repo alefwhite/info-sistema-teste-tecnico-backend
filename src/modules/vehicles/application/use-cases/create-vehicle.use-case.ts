@@ -21,7 +21,9 @@ export class CreateVehicleUseCase {
     private readonly cacheProvider: ICacheProvider,
   ) {}
 
-  async execute(input: CreateVehicleDto & { userId: string }): Promise<Vehicle> {
+  async execute(
+    input: CreateVehicleDto & { userId: string },
+  ): Promise<Vehicle> {
     const model = await this.modelRepository.findById(input.modelId);
     if (!model) {
       throw new ModelNotFoundError(input.modelId);
