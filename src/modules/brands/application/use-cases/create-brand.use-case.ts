@@ -21,13 +21,7 @@ export class CreateBrandUseCase {
       throw new BrandAlreadyExistsError(nameTrimmed);
     }
     const now = new Date();
-    const brand = new Brand(
-      randomUUID(),
-      nameTrimmed,
-      input.userId,
-      now,
-      now,
-    );
+    const brand = new Brand(randomUUID(), nameTrimmed, input.userId, now, now);
     await this.repository.create(brand);
     this.logger.log({
       action: 'brand.created',

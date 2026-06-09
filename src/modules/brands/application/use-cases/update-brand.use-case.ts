@@ -14,7 +14,9 @@ export class UpdateBrandUseCase {
     private readonly repository: IBrandRepository,
   ) {}
 
-  async execute(input: { id: string; userId: string } & UpdateBrandDto): Promise<Brand> {
+  async execute(
+    input: { id: string; userId: string } & UpdateBrandDto,
+  ): Promise<Brand> {
     const brand = await this.repository.findById(input.id);
     if (!brand) {
       throw new BrandNotFoundError(input.id);

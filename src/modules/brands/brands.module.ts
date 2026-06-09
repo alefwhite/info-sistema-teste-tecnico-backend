@@ -15,13 +15,18 @@ const databaseProvider = process.env.DATABASE_PROVIDER ?? 'inmemory';
 
 const repositoryProvider = {
   provide: 'IBrandRepository',
-  useClass: databaseProvider === 'typeorm' ? TypeOrmBrandRepository : InMemoryBrandRepository,
+  useClass:
+    databaseProvider === 'typeorm'
+      ? TypeOrmBrandRepository
+      : InMemoryBrandRepository,
 };
 
 @Module({
   imports: [
     SharedInfrastructureModule,
-    ...(databaseProvider === 'typeorm' ? [TypeOrmModule.forFeature([BrandOrmEntity])] : []),
+    ...(databaseProvider === 'typeorm'
+      ? [TypeOrmModule.forFeature([BrandOrmEntity])]
+      : []),
   ],
   controllers: [BrandController],
   providers: [

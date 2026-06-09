@@ -36,7 +36,12 @@ export class BrandController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateBrandDto, @Req() req: AuthenticatedRequest) {
-    return { data: await this.createBrandUseCase.execute({ ...dto, userId: req.user.sub }) };
+    return {
+      data: await this.createBrandUseCase.execute({
+        ...dto,
+        userId: req.user.sub,
+      }),
+    };
   }
 
   @Get()
@@ -56,13 +61,20 @@ export class BrandController {
     @Req() req: AuthenticatedRequest,
   ) {
     return {
-      data: await this.updateBrandUseCase.execute({ id, ...dto, userId: req.user.sub }),
+      data: await this.updateBrandUseCase.execute({
+        id,
+        ...dto,
+        userId: req.user.sub,
+      }),
     };
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
     await this.deleteBrandUseCase.execute({ id, userId: req.user.sub });
   }
 }

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IBrandRepository } from '../../domain/repositories/brand.repository.interface';
 import { Brand } from '../../domain/entities/brand.entity';
-import { FleetStoreService, BrandRecord } from '../../../../shared/infrastructure/fleet-store.service';
+import {
+  FleetStoreService,
+  BrandRecord,
+} from '../../../../shared/infrastructure/fleet-store.service';
 import { BrandHasModelsError } from '../../domain/errors/brand-has-models.error';
 
 @Injectable()
