@@ -10,6 +10,7 @@ Este projeto é uma API REST desenvolvida em **NestJS** com **TypeScript** para 
 - **Persistência**: SQL Server (MSSQL), TypeORM (com Migrations)
 - **Cache**: Redis Cache
 - **Autenticação**: JWT, Passport, bcryptjs
+- **Auditoria**: MongoDB (armazenamento resiliente de logs de interações)
 - **Broker (Mensageria)**: RabbitMQ (mensagens de eventos de veículos)
 - **Testes**: Jest (Unitários, Integração e E2E)
 - **Containerização**: Docker, Docker Compose
@@ -18,7 +19,7 @@ Este projeto é uma API REST desenvolvida em **NestJS** com **TypeScript** para 
 
 ## 🏗️ Estrutura do Projeto
 
-O código-fonte está estruturado sob a pasta `src/` obedecendo às camadas do Clean Architecture:
+O código-fonte está estruturado sob a pasta `src/` obedecendo às camadas do Clean Architecture e separação de responsabilidades:
 
 ```txt
 src/
@@ -28,15 +29,15 @@ src/
  │   ├── brands/        # Gestão de Marcas (Brands)
  │   ├── models/        # Gestão de Modelos (Models)
  │   └── vehicles/      # Gestão de Veículos (Vehicles)
- ├── shared/            # Componentes e utilitários compartilhados
- └── config/            # Arquivos de configurações
+ ├── shared/            # Componentes e utilitários compartilhados (como Cache, Database, MongoDB e Messaging)
+ └── config/            # Arquivos de configurações centralizadas de ambiente
 ```
 
 Cada módulo é dividido internamente nas seguintes subpastas:
 - **`application/`**: DTOs, interfaces e Casos de Uso (toda a regra de negócio do módulo).
 - **`domain/`**: Entidades ricas de domínio, regras e exceções/erros específicos.
-- **`infrastructure/`**: Entidades ORM (TypeORM), repositórios específicos e integrações externas (Redis, RabbitMQ).
-- **`presentation/`**: Controllers e presenters.
+- **`infrastructure/`**: Entidades ORM (TypeORM), repositórios específicos e integrações externas.
+- **`presentation/`**: Controllers, consumidores de mensageria e presenters.
 
 ---
 
@@ -54,7 +55,13 @@ cp .env.example .env
 ```
 O projeto suporta dois modos de banco de dados e cache configuráveis via `.env` pela variável `DATABASE_PROVIDER`:
 - `inmemory`: Executa em memória (ideal para testes locais e desenvolvimento leve sem Docker).
-- `typeorm`: Executa integrado com o SQL Server e Redis (modo produção/homologação).
+- `typeorm`: Executa integrado com o SQL Server, Redis, RabbitMQ e MongoDB (modo produção/homologação).
+
+As configurações de ambiente são todas centralizadas sob o módulo `@nestjs/config` através do arquivo `src/config/configuration.ts`.
+
+#### Configurações Adicionais
+- `MONGO_URI`: URI de conexão com o MongoDB para registro de logs de auditoria (ex: `mongodb://localhost:27017/fleet_audit`).
+- `RABBITMQ_URL`: URL de conexão com o broker RabbitMQ (ex: `amqp://guest:guest@localhost:5672`).
 
 ### 3. Subir Serviços Integrados (Docker Compose)
 Se você estiver utilizando o modo `typeorm`, inicie os serviços do banco de dados, Redis, RabbitMQ e MongoDB executando:
@@ -93,6 +100,23 @@ pnpm run test:e2e
 # Verificar cobertura de testes (Coverage)
 pnpm run test:cov
 ```
+
+---
+
+## 📝 Auditoria e Mensageria (Eventos)
+
+### Auditoria (MongoDB)
+Toda interação HTTP bem-sucedida ou falha na aplicação é gravada na coleção `audit_logs` no MongoDB de forma transparente através do `AuditMiddleware`.
+Os dados do usuário autenticado (`userId` e `nickname`), endpoint, método HTTP, payload (corpo, query e parâmetros de rota) e código de status são registrados.
+Os payloads gravados são higienizados para ocultar dados sensíveis como senhas e chaves de tokens.
+
+### Mensageria (RabbitMQ)
+O ciclo de vida dos veículos gera eventos que são publicados assincronamente em uma fila RabbitMQ:
+- **`vehicle.created`**: Publicado ao criar um veículo.
+- **`vehicle.updated`**: Publicado ao atualizar um veículo.
+- **`vehicle.deleted`**: Publicado ao excluir um veículo.
+
+A aplicação atua de forma híbrida e inclui um consumidor (`VehicleEventConsumer`) que consome essas mensagens registrando-as nos logs do console, validando o fluxo de ponta a ponta.
 
 ---
 
