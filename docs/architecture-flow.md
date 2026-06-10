@@ -153,3 +153,62 @@ No projeto, utilizamos principalmente:
   - **`MongoService`**: Executa `client.close()` para fechar a conexão ativa com o MongoDB.
   - **`RedisCacheProvider`**: Executa `client.quit()` para desconectar de forma segura do Redis.
 
+---
+
+## 8. Detalhamento de Mensageria e Eventos (RabbitMQ)
+
+Para desenvolvedores acostumados com **MassTransit (C#)**, **Spring AMQP (Java)** ou **Celery (Python)**, o NestJS fornece uma excelente abstração para o RabbitMQ através do módulo nativo `@nestjs/microservices`. O fluxo de mensageria no projeto é implementado de forma **Híbrida**: a mesma aplicação executa como API HTTP e como consumidora (Consumer) da fila de mensagens em paralelo.
+
+### 1. Inicialização Híbrida (`main.ts`)
+No ponto de entrada da aplicação, conectamos o RabbitMQ como um microsserviço à nossa instância HTTP principal:
+```typescript
+app.connectMicroservice<MicroserviceOptions>({
+  transport: Transport.RMQ,
+  options: {
+    urls: [process.env.RABBITMQ_URL],
+    queue: 'vehicles_queue', // Nome da fila que a aplicação vai escutar
+    queueOptions: { durable: true },
+  },
+});
+await app.startAllMicroservices();
+```
+Isso faz com que o NestJS ligue o listener AMQP em paralelo com o servidor Express, permitindo escutar eventos sem necessidade de subir um processo Node.js separado.
+
+### 2. O Publicador (Publisher - `RabbitmqService`)
+Os Casos de Uso não interagem com o cliente do RabbitMQ diretamente. Eles utilizam uma fachada de infraestrutura: a classe `RabbitmqService`.
+- **Injeção do ClientProxy**: Injetamos o token `'RABBITMQ_SERVICE'` fornecido pelo `ClientsModule` do NestJS.
+- **Emissão Sem Bloqueio (`emit`)**: O método `.emit(pattern, payload)` do NestJS envia o evento de forma assíncrona. Nos inscrevemos (`.subscribe()`) para capturar erros de conexão de forma a não estourar uma exceção no fluxo do usuário HTTP principal se o broker estiver offline.
+
+Exemplo de chamada no caso de uso (`CreateVehicleUseCase`):
+```typescript
+// Dispara o evento em background (void) sem travar a resposta HTTP
+void this.rabbitmqService.publishVehicleCreated(vehicle.id, vehicle.licensePlate, vehicle.createdBy);
+```
+
+### 3. O Consumidor (Consumer - `VehicleEventConsumer`)
+Para escutar as mensagens, declaramos um controlador NestJS comum (`@Controller`) que usa o decorador `@EventPattern` fornecido pelo `@nestjs/microservices`:
+```typescript
+@Controller()
+export class VehicleEventConsumer {
+  @EventPattern('vehicle.created')
+  handleVehicleCreated(@Payload() data: any) {
+    // Processamento da mensagem recebida da fila 'vehicles_queue'
+  }
+}
+```
+O NestJS faz o roteamento inteligente: toda mensagem que chega na fila `vehicles_queue` com o padrão (ou rota de roteamento) `'vehicle.created'` é automaticamente entregue a este método.
+
+### 4. Estrutura dos Payloads de Evento
+Os payloads seguem a convenção definida no PRD e guias técnicos para manter a interoperabilidade com outros microsserviços da frota:
+
+- **`vehicle.created`** / **`vehicle.updated`** / **`vehicle.deleted`**:
+```json
+{
+  "vehicleId": "uuid-do-veiculo",
+  "licensePlate": "ABC-1234",
+  "createdBy": "uuid-do-usuario",
+  "timestamp": "2026-06-09T21:20:00Z"
+}
+```
+
+
