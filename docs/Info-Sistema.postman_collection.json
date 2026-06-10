@@ -1,0 +1,636 @@
+{
+  "info": {
+    "_postman_id": "52e73457-d0cb-4ef6-bbd0-4dfed0ebe5eb",
+    "name": "Info-Sistema",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "4963658"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json()\r",
+                  "pm.environment.set(\"user-token\", response.data.accessToken)"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"login\": \"aivacol\",\r\n    \"password\": \"aivacol_admin_password\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/auth/login",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "brands",
+      "item": [
+        {
+          "name": "brands",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/brands",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "brands"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "brand",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/brands/FC527B0E-B337-484F-B1AE-EDD4F998E0F4",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "brands",
+                "FC527B0E-B337-484F-B1AE-EDD4F998E0F4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "brand",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Tesla Premium\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/brands/FC527B0E-B337-484F-B1AE-EDD4F998E0F4",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "brands",
+                "FC527B0E-B337-484F-B1AE-EDD4F998E0F4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "brand",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Tesla Premium\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/brands/FC527B0E-B337-484F-B1AE-EDD4F998E0F4",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "brands",
+                "FC527B0E-B337-484F-B1AE-EDD4F998E0F4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "brand",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Nissan\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/brands",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "brands"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "item": [
+        {
+          "name": "model",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"aivacol\",\r\n    \"brandId\": \"3613E0FD-5885-42DD-9EF3-25D7276E87A4\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/models",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "models"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "models",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/models",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "models"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "model",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/models/393C109D-4F5A-4A83-8286-EC194C18AAC4",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "models",
+                "393C109D-4F5A-4A83-8286-EC194C18AAC4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "model",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Versa\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/models/393C109D-4F5A-4A83-8286-EC194C18AAC4",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "models",
+                "393C109D-4F5A-4A83-8286-EC194C18AAC4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "model",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Versa\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/models/393C109D-4F5A-4A83-8286-EC194C18AAC4",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "models",
+                "393C109D-4F5A-4A83-8286-EC194C18AAC4"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "vehicles",
+      "item": [
+        {
+          "name": "vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"licensePlate\": \"AIV-1011\",\r\n  \"chassis\": \"9BWAAAAAA0A101011\",\r\n  \"renavam\": \"12345678902\",\r\n  \"year\": 2023,\r\n  \"modelId\": \"393C109D-4F5A-4A83-8286-EC194C18AAC4\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/vehicles",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "vehicles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "vehicles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/vehicles",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "vehicles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/vehicles/4E174076-7A82-4A39-AC4B-1BF7691872ED",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "vehicles",
+                "4E174076-7A82-4A39-AC4B-1BF7691872ED"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Versa\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/vehicles/4E174076-7A82-4A39-AC4B-1BF7691872ED",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "vehicles",
+                "4E174076-7A82-4A39-AC4B-1BF7691872ED"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user-token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Versa\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{Info-Sistema-Local}}/vehicles/4E174076-7A82-4A39-AC4B-1BF7691872ED",
+              "host": [
+                "{{Info-Sistema-Local}}"
+              ],
+              "path": [
+                "vehicles",
+                "4E174076-7A82-4A39-AC4B-1BF7691872ED"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
